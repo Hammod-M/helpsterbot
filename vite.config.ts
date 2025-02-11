@@ -1,12 +1,13 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
-import svgr from 'vite-plugin-svgr'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
+import svgr from "vite-plugin-svgr";
 
 export default defineConfig({
+   base: "/helpsterbot/",
    resolve: {
       alias: {
-         '@': path.resolve(__dirname, './src'),
+         "@": path.resolve(__dirname, "./src"),
       },
    },
    plugins: [
@@ -17,4 +18,4 @@ export default defineConfig({
       }),
       react(),
    ],
-})
+});
