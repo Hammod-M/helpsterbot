@@ -2,7 +2,7 @@ import axios from "axios";
 import setupInterceptors from "./interceptors";
 
 // Жестко задаем URL без использования переменных окружения
-export const API_URL = "https://194.87.221.211:8000";
+export const API_URL = "https://api.helpsterbot.ru";
 
 const axiosInstance = axios.create({
    baseURL: API_URL, // Используем прямой URL
