@@ -95,6 +95,6 @@ export const router = createBrowserRouter(
             { path: "pricing", element: <PricingManager /> },
          ],
       },
-   ]
-   // { basename: "/helpsterbot/" }
+   ],
+   { basename: "/helpsterbot/" }
 );
