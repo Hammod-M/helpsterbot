@@ -16,13 +16,13 @@ import { Select } from "@mantine/core";
 import ModelSelector from "@/shared/ui/elements/ModelSelector";
 // import { useCombinedMessages } from "@/features/chat/hooks/useCombinedMessages";
 
-const models = ["gpt-3.5-turbo", "chatgpt-4o-latest", "gpt-4o-mini", "gpt-4o"];
+// const models = ["gpt-3.5-turbo", "chatgpt-4o-latest", "gpt-4o-mini", "gpt-4o"];
 
 export const Chat = () => {
    const { userID } = useSelector((state: RootState) => state.auth);
    const { user } = useSelector((state: RootState) => state.profile);
    console.log("user", user);
-   const initialModel = user?.model_using || models[0];
+   const initialModel = user?.model_using || AI_MODELS[0].value;
    const [selectedModel, setSelectedModel] = useState(initialModel);
    const messagesEndRef = useRef<HTMLDivElement>(null);
    const [localMessages, setLocalMessages] = useState<Message[]>([]);

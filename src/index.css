@@ -66,8 +66,8 @@ body {
 }
 
 .content {
+   padding: 50px 0;
    flex: 1;
-   padding: 20px;
 }
 .d-flex {
    display: flex;
@@ -265,6 +265,12 @@ header {
    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
    position: relative;
 
+   max-width: 100%;
+   overflow-wrap: break-word;
+   word-wrap: break-word;
+   word-break: break-word;
+   white-space: pre-wrap;
+
    .user & {
       color: var(--apple-black);
       border-radius: 12px 12px 4px 12px;
@@ -305,7 +311,7 @@ header {
    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.chat-input input {
+.chat-input textarea {
    flex: 1;
    border: none;
    outline: none;
@@ -313,8 +319,9 @@ header {
    padding: 8px 12px;
    border-radius: var(--radius-sm);
    max-width: 100%;
-   word-wrap: break-word;
    overflow: hidden;
+   white-space: pre-wrap;
+   overflow-wrap: break-word;
 }
 
 .send-button {
@@ -405,6 +412,19 @@ header {
 
 .message-container.bot {
    justify-content: flex-start;
+}
+
+/* Для markdown контента */
+.react-markdown {
+   max-width: 100%;
+}
+
+.react-markdown pre {
+   white-space: pre-wrap;
+   word-wrap: break-word;
+}
+.react-markdown code {
+   white-space: pre-wrap;
 }
 
 .message-content {
@@ -896,5 +916,24 @@ header {
 
    .menu-content.active {
       right: 0;
+   }
+
+   .chat-input-wrapper {
+      padding: 5px;
+   }
+
+   .chat-model-select {
+      width: 100%;
+      margin-top: 12px;
+   }
+
+   .chat-header {
+      flex-direction: column;
+      align-items: flex-start;
+   }
+
+   .chat-input button {
+      min-width: auto;
+      padding: 0 10px;
    }
 }

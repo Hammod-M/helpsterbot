@@ -35,6 +35,7 @@ export const Header = ({ onMenuToggle }: { onMenuToggle: () => void }) => {
       { label: "Главная", link: "/" },
       { label: "Тарифы", link: "/pricing" },
       { label: "Блог", link: "/blog" },
+      { label: "Статьи", link: "/articles" },
       { label: "Изображения", link: "/images" },
       { label: "Видео", link: "/video" },
    ];
@@ -87,15 +88,17 @@ export const Header = ({ onMenuToggle }: { onMenuToggle: () => void }) => {
                   align="center"
                   style={{ height: 60 }}
                >
-                  <Title
-                     order={2}
-                     style={{
-                        color: theme.white,
-                        fontFamily: theme.headings.fontFamily,
-                     }}
-                  >
-                     Logo
-                  </Title>
+                  <Link to="/" style={{ textDecoration: "none" }}>
+                     <Title
+                        order={2}
+                        style={{
+                           color: theme.white,
+                           fontFamily: theme.headings.fontFamily,
+                        }}
+                     >
+                        Logo
+                     </Title>
+                  </Link>
 
                   {!isMobile ? (
                      <Group gap="xl">
@@ -203,7 +206,7 @@ export const Header = ({ onMenuToggle }: { onMenuToggle: () => void }) => {
             overlay={{ opacity: 0.5, blur: 4 }}
          >
             <Stack gap="md">
-               {links.map((link) => (
+               {links?.map((link) => (
                   <Button
                      key={link.label}
                      component={Link}
@@ -237,10 +240,16 @@ export const Header = ({ onMenuToggle }: { onMenuToggle: () => void }) => {
                         to="/auth/signin"
                         variant="outline"
                         radius="xl"
+                        onClick={() => setDrawerOpened(false)}
                      >
                         Вход
                      </Button>
-                     <Button component={Link} to="/auth/signup" radius="xl">
+                     <Button
+                        component={Link}
+                        to="/auth/signup"
+                        radius="xl"
+                        onClick={() => setDrawerOpened(false)}
+                     >
                         Регистрация
                      </Button>
                   </Group>

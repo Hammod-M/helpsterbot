@@ -93,6 +93,24 @@ export const ProfilePage = () => {
    return (
       <div className="profile-container">
          <div className="profile-section">
+            <h2>Подписка</h2>
+            <div className="subscription-info">
+               <p>Текущий тариф: {user.subscribe}</p>
+               <p>
+                  Действует до:{" "}
+                  {new Date(user.subscribe_time).toLocaleDateString()}
+               </p>
+
+               <p>Осталось сообщений: {user.message_count}</p>
+               <p>Осталось изображений: {user.image_count}</p>
+               <p>Осталось озвучек: {user.voice_count}</p>
+               <p>
+                  Максимальная длина сообщения в символах: {user.max_length_sym}
+               </p>
+            </div>
+         </div>
+
+         <div className="profile-section">
             <h2>Личные данные</h2>
             <form onSubmit={handleSubmit(onSubmit)}>
                <div className="form-group">
@@ -144,18 +162,6 @@ export const ProfilePage = () => {
                   Сохранить изменения
                </button>
             </form>
-         </div>
-
-         <div className="profile-section">
-            <h2>Подписка</h2>
-            <div className="subscription-info">
-               <p>Текущий тариф: {user.subscribe}</p>
-               <p>
-                  Действует до:{" "}
-                  {new Date(user.subscribe_time).toLocaleDateString()}
-               </p>
-               <p>Использовано сообщений: {user.message_count}</p>
-            </div>
          </div>
 
          {/* <div className="profile-section">

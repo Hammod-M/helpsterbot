@@ -1,12 +1,23 @@
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useCreatePostMutation } from "../../../blog/model/api";
-import { BlogPost } from "../../../blog/model/types";
 
-import { TextInput, Button, Group, Paper, Title } from "@mantine/core";
+import { ArticlePost } from "@/features/article/model/types";
+import { useCreateArticleMutation } from "@/features/article/model/api";
+
+import {
+   TextInput,
+   Button,
+   Group,
+   Paper,
+   Radio,
+   FileInput,
+   Image,
+} from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { СontentTextEditor } from "@/shared/ui/components/СontentTextEditor";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const schema = yup
    .object({
@@ -18,14 +29,19 @@ const schema = yup
    .required();
 
 export const CreateArticle = () => {
-   const [createPost] = useCreatePostMutation();
+   const navigate = useNavigate();
+   const [createPost] = useCreateArticleMutation();
+
+   const [radioValue, setRadioValue] = useState("url");
+   const [preview, setPreview] = useState("");
 
    const {
       register,
       control,
       handleSubmit,
+      setValue,
       formState: { errors },
-   } = useForm<Partial<BlogPost>>({
+   } = useForm<Partial<ArticlePost>>({
       resolver: yupResolver(schema),
       defaultValues: {
          title: "",
@@ -35,7 +51,8 @@ export const CreateArticle = () => {
       },
    });
 
-   const onSubmit = async (data: Partial<BlogPost>) => {
+   // Обработчик отправки формы
+   const onSubmit = async (data: Partial<ArticlePost>) => {
       try {
          await createPost(data).unwrap();
          showNotification({
@@ -43,6 +60,7 @@ export const CreateArticle = () => {
             message: "Пост успешно создан!",
             color: "green",
          });
+         navigate("/admin/articles");
       } catch (error: any) {
          showNotification({
             title: "Ошибка",
@@ -54,9 +72,6 @@ export const CreateArticle = () => {
 
    return (
       <>
-         <Title align="center" order={1} mb="xl">
-            Статья
-         </Title>
          <Paper
             shadow="sm"
             padding="md"
@@ -84,25 +99,82 @@ export const CreateArticle = () => {
                   control={control}
                   render={({ field }) => (
                      <СontentTextEditor
-                        {...field}
-                        controls={[
-                           ["bold", "italic", "underline"],
-                           ["h1", "h2", "h3"],
-                        ]}
-                        placeholder="Введите текст поста"
-                        error={errors.text?.message}
-                        mb="md"
+                        value={field.value}
+                        onChange={(value: string) => setValue("text", value)} // Передаем текст в форму
                      />
                   )}
                />
 
-               <TextInput
+               <Controller
+                  name="img"
+                  control={control}
+                  render={({ field }) => {
+                     const handleFileChange = (file: File | null) => {
+                        if (file) {
+                           const reader = new FileReader();
+                           reader.onloadend = () => {
+                              field.onChange(reader.result);
+                              setPreview(reader.result as string);
+                           };
+                           reader.readAsDataURL(file);
+                        } else {
+                           field.onChange("");
+                           setPreview("");
+                        }
+                     };
+
+                     return (
+                        <div>
+                           <Radio.Group
+                              value={radioValue}
+                              onChange={setRadioValue}
+                              mb="md"
+                           >
+                              <Radio value="url" label="URL" />
+                              <Radio value="file" label="Загрузить файл" />
+                           </Radio.Group>
+
+                           {radioValue === "url" ? (
+                              <TextInput
+                                 label="URL изображения"
+                                 value={field.value}
+                                 onChange={(e) => {
+                                    field.onChange(e.currentTarget.value);
+                                    setPreview(e.currentTarget.value);
+                                 }}
+                                 error={errors.img?.message}
+                                 mb="md"
+                              />
+                           ) : (
+                              <FileInput
+                                 accept="image/*"
+                                 label="Загрузить изображение"
+                                 onChange={handleFileChange}
+                                 mb="md"
+                              />
+                           )}
+
+                           {preview && (
+                              <Image
+                                 src={preview}
+                                 height={200}
+                                 alt="Preview"
+                                 fit="contain"
+                                 mb="md"
+                              />
+                           )}
+                        </div>
+                     );
+                  }}
+               />
+
+               {/* <TextInput
                   label="Изображение"
                   placeholder="Введите URL изображения"
                   {...register("img")}
                   error={errors.img?.message}
                   mb="md"
-               />
+               /> */}
 
                <Group position="right" mt="md">
                   <Button type="submit" color="blue">

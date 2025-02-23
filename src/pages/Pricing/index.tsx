@@ -27,7 +27,7 @@ export const PricingPage = () => {
       (state: RootState) => state.auth
    );
 
-   const { data: plans } = useGetPricingPlansQuery();
+   const { data: plansFromBackend } = useGetPricingPlansQuery();
    const [createPayment] = useCreatePaymentMutation();
 
    const handleSelect = async (plan: any) => {
@@ -36,9 +36,9 @@ export const PricingPage = () => {
          return;
       }
       const payload = {
-         id: userID, // id текущего пользователя
-         amount: plan.price * 100, // цена выбранного тарифа
-         subscription_type: plan.name, // название тарифа
+         id: userID,
+         amount: plan.price * 100,
+         subscription_type: plan.name,
          subscription_time: new Date(
             new Date().setDate(new Date().getDate() + 30)
          )
@@ -47,20 +47,17 @@ export const PricingPage = () => {
       };
       try {
          const response = await createPayment(payload).unwrap();
-
          if (response?.message?.Success && response?.message?.PaymentURL) {
             window.location.href = response.message.PaymentURL;
          } else {
             console.log("Payment success");
-            // Добавьте оповещение об успешном платеже или дополнительную логику
          }
       } catch (error) {
          console.error("Error creating payment:", error);
-         // Обработка ошибок (например, показать уведомление об ошибке)
       }
    };
 
-   if (!plans) {
+   if (!plansFromBackend) {
       return (
          <Center style={{ height: "100vh" }}>
             <Loader size="lg" color="blue" variant="dots" />
@@ -68,24 +65,81 @@ export const PricingPage = () => {
       );
    }
 
-   // Статические данные для тарифных характеристик
+   // Статические данные для остальных тарифов
+   const staticPlans = [
+      {
+         id: 2,
+         name: "СТАНДАРТ",
+         price: 300,
+         message_count: 1000,
+         max_length_sym: 20000,
+         image_count: 200,
+         voice_count: 200,
+      },
+      {
+         id: 3,
+         name: "ПРЕМИУМ",
+         price: 750,
+         message_count: 2500,
+         max_length_sym: 100000,
+         image_count: 500,
+         voice_count: 500,
+      },
+      {
+         id: 4,
+         name: "УЛЬТРА",
+         price: 2000,
+         message_count: 7000,
+         max_length_sym: 400000,
+         image_count: 1400,
+         voice_count: 1400,
+      },
+   ];
+
+   // Объединяем данные от бэкенда и статические данные
+   const plans = [
+      ...plansFromBackend,
+      ...staticPlans.filter(
+         (staticPlan) =>
+            !plansFromBackend.some((plan) => plan.id === staticPlan.id)
+      ),
+   ];
+
+   // Функция для форматирования значений
+   const formatValue = (value: number | string, isFreePlan: boolean) => {
+      if (isFreePlan && value === 0) {
+         return "❌";
+      }
+      return typeof value === "number" ? value.toLocaleString() : value;
+   };
+
+   // Данные для таблицы с учетом данных от бэкенда
    const featureRows = [
       {
          feature: "💬 Запросы в месяц",
-         values: ["300", "1 000", "2 500", "7 000"],
+         values: plans.map((plan) =>
+            formatValue(plan.message_count, plan.name === "БЕСПЛАТНО")
+         ),
       },
       {
          feature: "📩 Максимальная длина сообщения в символах*",
-         values: ["1 200", "20 000", "100 000", "400 000"],
+         values: plans.map((plan) =>
+            formatValue(plan.max_length_sym, plan.name === "БЕСПЛАТНО")
+         ),
       },
       {
          feature: "🖼️ Создание изображений в месяц",
-         values: ["❌", "200", "500", "1 400"],
+         values: plans.map((plan) =>
+            formatValue(plan.image_count, plan.name === "БЕСПЛАТНО")
+         ),
       },
       {
          feature: "🔊 Озвучек в месяц",
-         values: ["❌", "200", "500", "1 400"],
+         values: plans.map((plan) =>
+            formatValue(plan.voice_count, plan.name === "БЕСПЛАТНО")
+         ),
       },
+      // Статические данные для остальных характеристик
       {
          feature: "📷 Распознавание фото",
          values: ["❌", "✅", "✅", "✅"],
@@ -108,11 +162,6 @@ export const PricingPage = () => {
          feature: "🤖 Доступ к o1",
          values: ["❌", "❌", "❌", "✅"],
       },
-      // {
-      //    feature: "Цена в месяц",
-      //    // Для бесплатного тарифа оставляем пустое значение
-      //    values: ["", "300 ₽", "750 ₽", "2 000 ₽"],
-      // },
    ];
 
    return (
@@ -139,7 +188,6 @@ export const PricingPage = () => {
             </Text>
          </Box>
          {/* Pricing Table */}
-
          <ScrollArea>
             <Table highlightOnHover verticalSpacing="md">
                <thead>
@@ -156,7 +204,6 @@ export const PricingPage = () => {
                         ВОЗМОЖНОСТЬ
                      </th>
                      {plans.map((plan, index) => {
-                        // Для 2-го и 3-го тарифов задаём жирное начертание
                         const fontWeight =
                            index === 0
                               ? 400
@@ -176,7 +223,7 @@ export const PricingPage = () => {
                               }}
                            >
                               <Title order={4} style={{ margin: 0 }}>
-                                 {plan.title}
+                                 {plan.name}
                               </Title>
                               <Text
                                  size="xl"

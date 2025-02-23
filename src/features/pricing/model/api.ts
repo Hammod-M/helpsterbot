@@ -23,13 +23,13 @@ export const pricingApi = rootApi.injectEndpoints({
          }),
          invalidatesTags: ["Pricing"],
       }),
-      // deletePricingPlan: build.mutation<void, string>({
-      //    query: (id) => ({
-      //       url: `/subscriptions/${id}/`,
-      //       method: "DELETE",
-      //    }),
-      //    invalidatesTags: ["Pricing"],
-      // }),
+      deletePricingPlan: build.mutation<void, string>({
+         query: (id) => ({
+            url: `/subscriptions/${id}/`,
+            method: "DELETE",
+         }),
+         invalidatesTags: ["Pricing"],
+      }),
 
       createPayment: build.mutation<PricingPlan, Partial<PricingPlan>>({
          query: (body) => ({
@@ -50,7 +50,7 @@ export const {
    useGetPricingPlansQuery,
    useCreatePricingPlanMutation,
    useUpdatePricingPlanMutation,
-   // useDeletePricingPlanMutation,
+   useDeletePricingPlanMutation,
    useCreatePaymentMutation,
    useGetPaymentQuery,
 } = pricingApi;

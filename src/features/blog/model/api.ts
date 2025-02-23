@@ -16,7 +16,7 @@ export const blogApi = rootApi.injectEndpoints({
          providesTags: ["Blog"],
       }),
       getPostById: build.query<BlogPost, string>({
-         query: (id) => `/blog/${id}/`,
+         query: (id) => `/blog/${id}`,
       }),
       createPost: build.mutation<BlogPost, Partial<BlogPost>>({
          query: (body) => ({

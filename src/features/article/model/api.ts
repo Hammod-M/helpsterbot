@@ -8,7 +8,7 @@ export const articleApi = rootApi.injectEndpoints({
          providesTags: ["Blog"],
       }),
       getArticleById: build.query<ArticlePost, string>({
-         query: (id) => `/article/${id}/`,
+         query: (id) => `/article/${id}`,
       }),
       createArticle: build.mutation<ArticlePost, Partial<ArticlePost>>({
          query: (body) => ({

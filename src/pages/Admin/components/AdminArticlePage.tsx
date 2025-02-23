@@ -1,3 +1,4 @@
+// AdminBlogPage.tsx
 import React from "react";
 import { Link } from "react-router-dom";
 import {
@@ -12,13 +13,32 @@ import {
    Box,
    Center,
    Loader,
+   ActionIcon,
 } from "@mantine/core";
+import { useNavigate } from "react-router-dom";
 import { ArticlePost } from "@/features/article/model/types";
 import { useGetArticlePostsQuery } from "@/features/article/model/api";
 import { stripHtml } from "@/shared/lib/helpers";
+import { useDeletePostMutation } from "@/features/blog/model/api";
+import { IconTrash, IconEdit, IconPlus } from "@tabler/icons-react";
 
-export const ArticlesPage: React.FC = () => {
-   const { data: posts, isLoading, isError } = useGetArticlePostsQuery();
+export const AdminArticlePage: React.FC = () => {
+   const {
+      data: posts,
+      isLoading,
+      isError,
+      refetch,
+   } = useGetArticlePostsQuery();
+   const [deletePost] = useDeletePostMutation();
+
+   const handleDelete = async (id: string) => {
+      try {
+         await deletePost(id).unwrap();
+         refetch();
+      } catch (error) {
+         console.error("Failed to delete post:", error);
+      }
+   };
 
    if (isLoading)
       return (
@@ -26,13 +46,23 @@ export const ArticlesPage: React.FC = () => {
             <Loader size="lg" color="blue" variant="dots" />
          </Center>
       );
-   if (isError || !posts) return <div>Error loading posts</div>;
 
    return (
       <Box p="xl">
-         <Title order={1} ta="center" mb="xl" fw={700}>
-            Статьи
-         </Title>
+         <Group justify="space-between" mb="xl">
+            <Title order={1} fw={700}>
+               Управление статьями
+            </Title>
+            <Button
+               component={Link}
+               to="/admin/article/create-post"
+               variant="filled"
+               color="green"
+               leftIcon={<IconPlus size="1rem" />}
+            >
+               Новый пост
+            </Button>
+         </Group>
 
          <SimpleGrid
             cols={{ base: 1, md: 2 }}
@@ -96,15 +126,24 @@ export const ArticlesPage: React.FC = () => {
                         <Text size="xs" weight={500}>
                            {post.number}
                         </Text>
-                        <Button
-                           component={Link}
-                           to={`/articles/${post.id}`}
-                           variant="light"
-                           color="blue"
-                           size="sm"
-                        >
-                           Читать далее
-                        </Button>
+                        <Group>
+                           <ActionIcon
+                              variant="light"
+                              color="red"
+                              onClick={() => handleDelete(post.id)}
+                           >
+                              <IconTrash size="1rem" />
+                           </ActionIcon>
+                           <Button
+                              component={Link}
+                              to={`/admin/article/edit/${post.id}`}
+                              variant="light"
+                              color="blue"
+                              size="sm"
+                           >
+                              Редактировать
+                           </Button>
+                        </Group>
                      </Group>
                   </Group>
                </Card>

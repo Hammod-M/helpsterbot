@@ -4,14 +4,18 @@ import { ChatInput } from "@/features/chat/ui/ChatInput";
 import { useEffect, useRef, useState } from "react";
 import { Message } from "@/features/chat/model/types";
 import { v4 as uuidv4 } from "uuid";
-import { Select } from "@mantine/core";
+import { Select, Alert } from "@mantine/core";
 import { AI_MODELS } from "@/shared/lib/constants";
+import { IconInfoCircle, IconLock } from "@tabler/icons-react";
 
 export const ChatSection = () => {
    const [messages, setMessages] = useState<Message[]>([]);
    const [sendMessage, { isLoading }] = useSendMessageMutation();
-   const [selectedModel, setSelectedModel] = useState(AI_MODELS[0].value);
    const messagesEndRef = useRef<HTMLDivElement>(null);
+
+   const [selectedModel, setSelectedModel] = useState(AI_MODELS[0].value);
+   const [showAlert, setShowAlert] = useState(false);
+   const [lastValidModel, setLastValidModel] = useState(AI_MODELS[0].value);
 
    const scrollToBottom = () => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -20,6 +24,18 @@ export const ChatSection = () => {
    // useEffect(() => {
    //    scrollToBottom();
    // }, [messages]);
+
+   const handleModelChange = (value: string | null) => {
+      if (value && value !== "GPT-3.5 Turbo") {
+         setShowAlert(true);
+         // Возвращаем предыдущее допустимое значение
+         setSelectedModel(lastValidModel);
+      } else if (value) {
+         setSelectedModel(value);
+         setLastValidModel(value);
+         setShowAlert(false);
+      }
+   };
 
    const handleSend = async (content: string) => {
       if (!content.trim()) return;
@@ -84,11 +100,32 @@ export const ChatSection = () => {
             <Select
                data={AI_MODELS}
                value={selectedModel}
-               onChange={(value) =>
-                  setSelectedModel(value || AI_MODELS[0].value)
+               onChange={handleModelChange}
+               allowDeselect={false}
+               leftSectionPointerEvents="none"
+               leftSection={
+                  selectedModel !== "GPT-3.5 Turbo" ? (
+                     <IconLock style={{ width: "18px", height: "18px" }} />
+                  ) : null
                }
-               className="chat-model-select"
+               disabled={showAlert}
             />
+
+            {showAlert && (
+               <Alert
+                  variant="light"
+                  color="yellow"
+                  icon={<IconInfoCircle />}
+                  mt="md"
+                  onClose={() => setShowAlert(false)}
+                  withCloseButton
+               >
+                  Для выбранной модели требуется PRO тариф.
+                  <a href="/pricing" style={{ marginLeft: "8px" }}>
+                     Обновить тариф
+                  </a>
+               </Alert>
+            )}
          </div>
 
          <div className="chat-messages">

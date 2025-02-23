@@ -10,14 +10,18 @@ import {
    Center,
    Loader,
 } from "@mantine/core";
-import { useGetPostByIdQuery } from "@/features/blog/model/api";
+import { useGetArticleByIdQuery } from "@/features/article/model/api";
 import ContentDisplay from "@/shared/ui/components/ContentDisplay";
 
-export const BlogPostPage: React.FC = () => {
+export const ArticlePostPage: React.FC = () => {
    const { postId } = useParams<{ postId: string }>();
    const navigate = useNavigate();
    console.log("id", postId);
-   const { data: post, isLoading, isError } = useGetPostByIdQuery(postId ?? "");
+   const {
+      data: post,
+      isLoading,
+      isError,
+   } = useGetArticleByIdQuery(postId ?? "");
 
    if (isLoading)
       return (
@@ -34,7 +38,7 @@ export const BlogPostPage: React.FC = () => {
             variant="light"
             color="blue"
             mb="md"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/article")}
          >
             Назад к списку
          </Button>
@@ -48,9 +52,9 @@ export const BlogPostPage: React.FC = () => {
 
             <ContentDisplay content={post?.text} />
 
-            <Text size="sm" color="dimmed" mt="sm">
+            {/* <Text size="sm" color="dimmed" mt="sm">
                Номер поста: {post.number}
-            </Text>
+            </Text> */}
          </Card>
       </Container>
    );

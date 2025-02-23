@@ -1,7 +1,9 @@
-// MessageItem.tsx
 import { Message } from "../model/types";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Text } from "@mantine/core";
 
 export const MessageItem = ({
    message,
@@ -23,7 +25,32 @@ export const MessageItem = ({
          <div className="message-content">
             <div className="message-bubble">
                <strong>{message.username}</strong>
-               <p>{message.content}</p>
+               <Text
+                  component="div"
+                  size="sm"
+                  style={{
+                     lineHeight: 1.5,
+                     wordBreak: "break-word",
+                     whiteSpace: "pre-wrap",
+                  }}
+               >
+                  <ReactMarkdown
+                     remarkPlugins={[remarkGfm]}
+                     components={{
+                        code: ({ node, ...props }) => (
+                           <code
+                              style={{
+                                 whiteSpace: "pre-wrap",
+                                 wordBreak: "break-word",
+                              }}
+                              {...props}
+                           />
+                        ),
+                     }}
+                  >
+                     {message.content}
+                  </ReactMarkdown>
+               </Text>
                <div className="message-time">{time}</div>
             </div>
          </div>
